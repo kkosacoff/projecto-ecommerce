@@ -13,7 +13,7 @@ export default class ProductManager {
 
   addProduct = async ({
     title,
-    desc,
+    description,
     code,
     price,
     status,
@@ -25,16 +25,20 @@ export default class ProductManager {
     await fs.promises.mkdir(this.path, { recursive: true })
 
     // Write the file
-    if (!(title, desc, code, price, status, stock, category, thumbnails)) {
+    if (
+      !(title, description, code, price, status, stock, category, thumbnails)
+    ) {
       // check that all params exist
       console.log('Missing parameter')
+      return false
     } else if (this.products.find((prod) => prod.code == code)) {
       console.log('Product with that ID already exists')
+      return false
     } else {
       const prodId = ProductManager.globalId++ // Add 1 to the code static variable
       const newProduct = {
         title,
-        desc,
+        description,
         code,
         price,
         status,
@@ -44,7 +48,6 @@ export default class ProductManager {
         prodId,
       }
       this.products.push(newProduct)
-      console.log(this.products)
       await fs.promises.writeFile(this.filename, JSON.stringify(this.products))
       console.log(`Product ${newProduct.prodId} added succesfully`)
       return newProduct
@@ -92,9 +95,11 @@ export default class ProductManager {
     if (await this.getProductById(id)) {
       const newArr = parsedRes.filter((item) => item.prodId !== id)
       await fs.promises.writeFile(this.filename, JSON.stringify(newArr))
+      console.log(`Prod ${id} deleted`)
       return id
     } else {
       console.log(`Product ID ${id} does not exist`)
+      return false
     }
   }
 }

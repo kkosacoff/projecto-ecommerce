@@ -1,0 +1,48 @@
+<div>
+<h1>Product List</h1>
+
+<ul id="productList">
+  {{#each products}}
+  <li id="{{prodId}}">{{title}} - ${{price}}
+    <button class="delete-button" onclick="handleDelete({{prodId}})">Delete</button>
+  </li>
+  {{/each}}
+</ul>
+
+<div id="prod-form">
+  <label for="title">Title:</label>
+  <input placeholder="Tambor" type="text" id="title" name="title" required>
+
+  <label for="description">Description:</label>
+  <textarea placeholder="tambortambor" id="description" name="description" required></textarea>
+
+  <label for="code">Code:</label>
+  <input placeholder="123456" type="text" id="code" name="code" required>
+
+  <label for="price">Price:</label>
+  <input placeholder="1000" type="number" id="price" name="price" min="0" step="0.01" required>
+
+  <label for="status">Status:</label>
+  <select id="status" name="status" required>
+    <option value="available">Available</option>
+    <option value="out-of-stock">Out of stock</option>
+    <option value="discontinued">Discontinued</option>
+  </select>
+
+  <label for="stock">Stock:</label>
+  <input placeholder="3200" type="number" id="stock" name="stock" min="0" required>
+
+  <label for="category">Category:</label>
+  <input placeholder="Percussion" type="text" id="category" name="category" required>
+
+  <label for="thumbnails">Thumbnails:</label>
+  <input placeholder="www.com" type="text" id="thumbnails" name="thumbnails[]" >
+
+  <button onclick="handleSubmitCreate()">Create Product</button>
+</div>
+
+</div>
+
+{{!-- Me traigo 2 scripts que hacen referenia al uso de los sockets --}}
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/index.js"></script>
