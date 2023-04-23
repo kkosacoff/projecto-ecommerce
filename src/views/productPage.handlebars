@@ -1,0 +1,37 @@
+<div>
+<h1>Product List</h1>
+
+<ul id="productList">
+  {{#each productArray}}
+  <li id="{{_id}}">
+    <h2>{{title}}</h2>
+    <h3>
+${{price}}
+    </h3>
+    <label>quantity: </label>
+    <input type="number">
+    <button class="add-button" onclick="handleAddToCart('{{_id}}')">Add To Cart</button>
+  </li>
+  {{/each}}
+</ul>
+
+
+<div class="page-buttons">
+  {{#if hasPrevPage}}
+  <a href="{{this.prevLink}}">Anterior</a>
+  {{/if}}
+  {{#if hasNextPage}}
+  <a href="{{this.nextLink}}">Siguiente</a>
+  {{/if}}
+</div>
+
+<h1></h1>
+
+<div id="cart">
+</div>
+
+</div>
+
+{{!-- Me traigo 2 scripts que hacen referenia al uso de los sockets --}}
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/indexProducts.js"></script>

@@ -2,9 +2,6 @@ const socket = io()
 const productList = document.getElementById('productList')
 
 const btn = document.getElementsByClassName('delete-button')
-// btn.addEventListener('click', (e) => {
-//   console.log(e.target.parentNode.id)
-// })
 
 const createProductObject = () => {
   const title = document.getElementById('title').value
@@ -47,23 +44,22 @@ const handleSubmitCreate = () => {
   }
 }
 
+const handleDelete = (prodId) => {
+  console.log(prodId)
+  socket.emit('deleteProduct', prodId)
+}
+
 socket.on('updateProductList', (product) => {
   const li = document.createElement('li')
   const btn = document.createElement('button')
   btn.textContent = 'Delete'
   btn.className = 'delete-button'
-  // btn.onclick = handleDelete(product.prodId)
-  li.id = product.prodId
+  btn.onclick = handleDelete(product.prodId)
+  li.id = product._id
   li.textContent = `${product.title} - $${product.price}`
   li.appendChild(btn)
   productList.appendChild(li)
-  // console.log(`Product ${product.title} added`)
 })
-
-const handleDelete = (prodId) => {
-  console.log(prodId)
-  socket.emit('deleteProduct', prodId)
-}
 
 socket.on('removeProductFromList', (prodId) => {
   const li = document.getElementById(prodId)

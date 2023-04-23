@@ -1,21 +1,61 @@
 import { Router } from 'express'
-import ProductManager from '../services/ProductManager.js'
+import url from 'node:url'
+// import ProductManager from '../services/fs/ProductManager.js'
+import ProductManager from '../services/db/product.services.js'
 
 const pm1 = new ProductManager('/products.json')
 
 const router = Router()
 
+const baseUrl = 'http://localhost:9090/api/products'
+
 // Endpoint for showing all products
 router.get('/', async (req, res) => {
-  const products = await pm1.getProducts()
-  if (req.query.limit) {
-    res.send(products.slice(0, req.query.limit))
+  const newUrl = new URL(`${baseUrl}${req.url}`)
+
+  const products = await pm1.getProductsNew(
+    req.query.limit,
+    req.query.page,
+    req.query.filter,
+    req.query.sort
+  )
+
+  let prevLink = ''
+  let nextLink = ''
+
+  if (products.hasPrevPage) {
+    newUrl.searchParams.set('page', products.prevPage)
+    prevLink = newUrl.href
+  }
+
+  if (products.hasNextPage) {
+    newUrl.searchParams.set('page', products.nextPage)
+    nextLink = newUrl.href
+  }
+
+  const respObj = {
+    payload: products.docs,
+    totalPages: products.totalPages,
+    prevPage: products.prevPage,
+    nextPage: products.nextPage,
+    page: products.page,
+    hasPrevPage: products.hasPrevPage,
+    hasNextPage: products.hasNextPage,
+    prevLink: prevLink,
+    nextLink: nextLink,
+  }
+
+  if (products) {
+    res.send({
+      msg: 'Success',
+      ...respObj,
+    })
   } else {
-    res.send(products)
+    res.send({ msg: `Couldn't get products` })
   }
 })
 
-// Endpoint that allows to query by product ID
+// Endpoint that allows to query by path by product ID
 router.get('/:pid', async (req, res) => {
   const product = await pm1.getProductById(req.params.pid)
   if (product) {
@@ -32,7 +72,7 @@ router.post('/', async (req, res) => {
   if (newProd) {
     res.send({
       status: 'Success',
-      msg: `Product ${newProd.prodId} created successfully`,
+      msg: `Product ${newProd.code} created successfully`,
     })
   } else {
     res.send({
@@ -44,7 +84,6 @@ router.post('/', async (req, res) => {
 
 // Endpoint that allows to update by product ID
 router.put('/:pid', async (req, res) => {
-  console.log(req.params)
   const updatedProd = await pm1.updateProductById(req.params.pid, req.body)
   if (updatedProd) {
     res.send({
