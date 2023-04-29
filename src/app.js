@@ -2,11 +2,15 @@
 import express from 'express'
 import { engine } from 'express-handlebars'
 import mongoose from 'mongoose'
+import session from 'express-session'
+import MongoStore from 'connect-mongo'
 
 // Import routers
 import productsRouter from '../src/routes/products.router.js'
 import cartRouter from '../src/routes/cart.router.js'
 import viewsRouter from '../src/routes/views.router.js'
+import sessionsRouter from '../src/routes/sessions.router.js'
+import userViewsRouter from '../src/routes/users.views.router.js'
 
 // Import utils
 import __dirname from './utils.js'
@@ -21,6 +25,26 @@ const cm = new CartManager()
 // Configure server
 const app = express()
 const PORT = 9090
+
+const MONGO_URL =
+  'mongodb://localhost:27017/ecommerce?retryWrites=true&w=majority'
+
+app.use(
+  session({
+    //ttl: Time to live in seconds,
+    //retries: Reintentos para que el servidor lea el archivo del storage.
+    //path: Ruta a donde se buscará el archivo del session store.
+    // store: new fileStore({path:"./sessions", ttl:40, retries: 0}),
+    store: MongoStore.create({
+      mongoUrl: MONGO_URL,
+      mongoOptions: { useNewUrlParser: true, useUnifiedTopology: true },
+      ttl: 300,
+    }),
+    secret: 'CoderS3cret',
+    resave: false,
+    saveUninitialized: true,
+  })
+)
 
 // Enable endpoints to accept JSON requests
 app.use(express.json())
@@ -37,18 +61,22 @@ app.set('view engine', 'handlebars')
 // Configure routes
 app.use('/api/products', productsRouter)
 app.use('/api/carts', cartRouter)
-app.use('/home', viewsRouter)
+app.use('/api/sessions', sessionsRouter)
+app.use('/', viewsRouter)
+app.use('/users', userViewsRouter)
 
 // Activate server
 const httpServer = app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`)
 })
 
+/*=============================================
+=                   Mongo                   =
+=============================================*/
+
 const connectMongoDB = async () => {
   try {
-    await mongoose.connect(
-      'mongodb://localhost:27017/ecommerce?retryWrites=true&w=majority'
-    )
+    await mongoose.connect(MONGO_URL)
     console.log('Conectado con exito a MongoDB usando Moongose.')
   } catch (error) {
     console.error('No se pudo conectar a la BD usando Moongose: ' + error)
@@ -56,6 +84,10 @@ const connectMongoDB = async () => {
   }
 }
 connectMongoDB()
+
+/*=============================================
+=                   Sockets                   =
+=============================================*/
 
 import { Server } from 'socket.io'
 // Configure socket

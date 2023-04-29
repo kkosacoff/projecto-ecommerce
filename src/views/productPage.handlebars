@@ -1,6 +1,13 @@
 <div>
 <h1>Product List</h1>
 
+<div>
+  <h2>Hola {{user.name}}!</h2>
+  <p>{{user.email}}</p>
+  <p>{{user.age}}</p>
+  <button id="logoutButton">Logout</button>
+</div>
+
 <ul id="productList">
   {{#each productArray}}
   <li id="{{_id}}">
@@ -25,7 +32,6 @@ ${{price}}
   {{/if}}
 </div>
 
-<h1></h1>
 
 <div id="cart">
 </div>

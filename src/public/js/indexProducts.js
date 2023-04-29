@@ -1,5 +1,6 @@
 const socket = io()
 const cart = document.getElementById('cart')
+const logout = document.getElementById('logoutButton')
 
 const createCart = () => {
   socket.emit('createCart')
@@ -19,4 +20,16 @@ socket.on('clientCart', (newCart) => {
   a.className = 'delete-button'
   a.href = `http://localhost:9090/home/cart/${newCart._id}`
   cart.append(a)
+})
+
+logout.addEventListener('click', (e) => {
+  console.log('click')
+  e.preventDefault()
+  fetch('/api/sessions/logout', {
+    method: 'GET',
+  }).then((result) => {
+    if (result.status === 200) {
+      window.location.replace('/users/login')
+    }
+  })
 })
