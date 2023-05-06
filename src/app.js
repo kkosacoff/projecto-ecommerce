@@ -4,6 +4,7 @@ import { engine } from 'express-handlebars'
 import mongoose from 'mongoose'
 import session from 'express-session'
 import MongoStore from 'connect-mongo'
+import passport from 'passport'
 
 // Import routers
 import productsRouter from '../src/routes/products.router.js'
@@ -14,6 +15,9 @@ import userViewsRouter from '../src/routes/users.views.router.js'
 
 // Import utils
 import __dirname from './utils.js'
+
+// import config
+import initializePassport from './config/passport.config.js'
 
 // Import services
 import ProductManager from './services/db/product.services.js'
@@ -28,6 +32,8 @@ const PORT = 9090
 
 const MONGO_URL =
   'mongodb://localhost:27017/ecommerce?retryWrites=true&w=majority'
+
+// Middlewares
 
 app.use(
   session({
@@ -45,6 +51,10 @@ app.use(
     saveUninitialized: true,
   })
 )
+
+initializePassport()
+app.use(passport.initialize())
+app.use(passport.session())
 
 // Enable endpoints to accept JSON requests
 app.use(express.json())

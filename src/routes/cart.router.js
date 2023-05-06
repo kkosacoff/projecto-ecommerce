@@ -13,6 +13,7 @@ router.post('/', async (req, res) => {
     res.send({
       status: 'Success',
       msg: `Cart ${newCart._id} created succesfully`,
+      payload: newCart,
     })
   } catch {
     res.send({ status: 'Error', msg: 'Cart could not be created' })

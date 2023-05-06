@@ -2,8 +2,20 @@ const socket = io()
 const cart = document.getElementById('cart')
 const logout = document.getElementById('logoutButton')
 
-const createCart = () => {
-  socket.emit('createCart')
+const createCart = async () => {
+  const resp = await fetch(`http://localhost:9090/api/carts`, {
+    method: 'POST',
+  })
+
+  const jsonData = await resp.json()
+
+  window.cart = jsonData.payload
+
+  const a = document.createElement('a')
+  a.textContent = 'View Cart'
+  a.className = 'delete-button'
+  a.href = `http://localhost:9090/cart/${window.cart._id}`
+  cart.append(a)
 }
 
 window.onload = createCart()
@@ -14,11 +26,11 @@ const handleAddToCart = (prodId) => {
 }
 
 socket.on('clientCart', (newCart) => {
-  window.cart = newCart
+  // window.cart = newCart
   const a = document.createElement('a')
   a.textContent = 'View Cart'
   a.className = 'delete-button'
-  a.href = `http://localhost:9090/home/cart/${newCart._id}`
+  a.href = `http://localhost:9090/cart/${newCart._id}`
   cart.append(a)
 })
 

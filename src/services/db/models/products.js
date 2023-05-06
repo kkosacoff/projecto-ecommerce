@@ -19,23 +19,26 @@ const numberTypeSchemaNonUniqueRequired = {
   required: true,
 }
 
-const productSchema = new mongoose.Schema({
-  title: stringTypeSchemaNonUniqueRequired,
-  description: stringTypeSchemaNonUniqueRequired,
-  code: stringTypeSchemaUniqueRequired,
-  price: numberTypeSchemaNonUniqueRequired,
-  status: {
-    type: String,
-    enum: ['Out of Stock', 'Inactive', 'Active'],
-    default: 'Active',
+const productSchema = new mongoose.Schema(
+  {
+    title: stringTypeSchemaNonUniqueRequired,
+    description: stringTypeSchemaNonUniqueRequired,
+    code: stringTypeSchemaUniqueRequired,
+    price: numberTypeSchemaNonUniqueRequired,
+    status: {
+      type: String,
+      enum: ['Out of Stock', 'Inactive', 'Active'],
+      default: 'Active',
+    },
+    stock: numberTypeSchemaNonUniqueRequired,
+    category: stringTypeSchemaNonUniqueRequired,
+    thumbnails: {
+      type: Array,
+      required: true,
+    },
   },
-  stock: numberTypeSchemaNonUniqueRequired,
-  category: stringTypeSchemaNonUniqueRequired,
-  thumbnails: {
-    type: Array,
-    required: true,
-  },
-})
+  { timestamps: true }
+)
 
 productSchema.plugin(mongoosePaginate)
 

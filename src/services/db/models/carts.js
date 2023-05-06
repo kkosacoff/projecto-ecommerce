@@ -2,20 +2,23 @@ import mongoose from 'mongoose'
 
 const collectionName = 'cart'
 
-const cartSchema = new mongoose.Schema({
-  products: {
-    type: [
-      {
-        product: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: 'products',
+const cartSchema = new mongoose.Schema(
+  {
+    products: {
+      type: [
+        {
+          product: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'products',
+          },
+          quantity: { type: Number },
         },
-        quantity: { type: Number },
-      },
-    ],
-    default: [],
+      ],
+      default: [],
+    },
   },
-})
+  { timestamps: true }
+)
 
 cartSchema.pre('findOne', function () {
   this.populate('products.product')
