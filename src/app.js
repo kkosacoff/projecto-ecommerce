@@ -5,6 +5,7 @@ import mongoose from 'mongoose'
 import session from 'express-session'
 import MongoStore from 'connect-mongo'
 import passport from 'passport'
+import * as dotenv from 'dotenv'
 
 // Import routers
 import productsRouter from '../src/routes/products.router.js'
@@ -30,8 +31,8 @@ const cm = new CartManager()
 const app = express()
 const PORT = 9090
 
-const MONGO_URL =
-  'mongodb://localhost:27017/ecommerce?retryWrites=true&w=majority'
+dotenv.config()
+const MONGO_URL = process.env.MONGO_URL
 
 // Middlewares
 

@@ -55,7 +55,6 @@ export default class CartManager {
       cart.products = cart.products.filter(
         (product) => product.product._id.toString() != prodId
       )
-      console.log(cart)
 
       let result = await cartsModel.updateOne({ _id: cartId }, cart)
 
@@ -71,10 +70,8 @@ export default class CartManager {
     newCart.products = []
     const result = await cartsModel.updateOne({ _id: id }, newCart)
     if (result) {
-      console.log(`Products deleted from Cart ${id}`)
       return true
     } else {
-      console.log(`Products couldn't be deleted`)
       return false
     }
   }
