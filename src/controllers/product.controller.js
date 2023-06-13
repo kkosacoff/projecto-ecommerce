@@ -1,13 +1,13 @@
-import ProductManager from '../services/db/product.services.js'
-import url from 'node:url'
+import ProductManager from '../services/dao/db/product.services.js'
+import { productService } from '../services/factory.js'
 
 const pm = new ProductManager()
-
+const persistenceFactory = productService
 const baseUrl = 'http://localhost:9090/api/products'
 
 export default class ProductController {
   addProductController = async (req, res) => {
-    const newProd = await pm.addProduct(req.body)
+    const newProd = await persistenceFactory.addProduct(req.body)
 
     if (newProd) {
       res.send({
@@ -25,7 +25,7 @@ export default class ProductController {
   getProductsController = async (req, res) => {
     const newUrl = new URL(`${baseUrl}${req.url}`)
 
-    const products = await pm.getProductsNew(
+    const products = await persistenceFactory.getProductsNew(
       req.query.limit,
       req.query.page,
       req.query.filter,
@@ -68,7 +68,7 @@ export default class ProductController {
   }
 
   getProductByIdController = async (req, res) => {
-    const product = await pm.getProductById(req.params.pid)
+    const product = await persistenceFactory.getProductById(req.params.pid)
     if (product) {
       res.send(product)
     } else {
@@ -77,7 +77,10 @@ export default class ProductController {
   }
 
   updateProductByIdController = async (req, res) => {
-    const updatedProd = await pm.updateProductById(req.params.pid, req.body)
+    const updatedProd = await persistenceFactory.updateProductById(
+      req.params.pid,
+      req.body
+    )
     if (updatedProd) {
       res.send({
         status: 'Success',
@@ -92,7 +95,7 @@ export default class ProductController {
   }
 
   deleteProductByIdController = async (req, res) => {
-    pm.deleteProductById(req.params.pid)
+    persistenceFactory.deleteProductById(req.params.pid)
     res.send('Ok')
   }
 }

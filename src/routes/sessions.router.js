@@ -1,9 +1,10 @@
 import { Router } from 'express'
-import userModel from '../services/db/models/users.js'
-import { createHash, isValidPassword } from '../utils.js'
 import passport from 'passport'
+import CartManager from '../services/dao/db/cart.services.js'
+import UserDTO from '../services/dto/user.dto.js'
 
 const router = Router()
+const cm = new CartManager()
 
 //? Normal register
 // router.post('/register', async (req, res) => {
@@ -84,17 +85,17 @@ router.post(
       return res
         .status(400)
         .send({ status: 'error', error: 'Invalid Credentials' })
-    req.session.user = {
-      name: `${req.user.first_name} ${req.user.last_name}`,
-      first_name: req.user.first_name,
-      last_name: req.user.last_name,
-      age: req.user.age,
-      email: req.user.email,
-    }
+
+    const newUser = new UserDTO(req.user)
+    const cart = await cm.createCart()
+    req.session.cart = cart
+    req.session.user = newUser
+
+    console.log(req.session.cart)
     res.send({
       status: 'success',
       message: 'user logged in',
-      payload: req.user,
+      payload: newUser,
     })
   }
 )
@@ -104,6 +105,14 @@ router.get('failedLogin', async (req, res) => {
   res.send({ error: 'Failed' })
 })
 // ? ---
+
+router.get('/current', async (req, res) => {
+  res.send({
+    status: 'success',
+    user: req.session.user,
+    cart: req.session.cart,
+  })
+})
 
 // ? Github login
 // * Route to call from front-end, and it calls passport github middleware

@@ -5,11 +5,12 @@ import mongoose from 'mongoose'
 import session from 'express-session'
 import MongoStore from 'connect-mongo'
 import passport from 'passport'
-import * as dotenv from 'dotenv'
+import config from './config/config.js'
 
 // Import routers
 import productsRouter from '../src/routes/products.router.js'
 import cartRouter from '../src/routes/cart.router.js'
+import ticketRouter from '../src/routes/tickets.router.js'
 import viewsRouter from '../src/routes/views.router.js'
 import sessionsRouter from '../src/routes/sessions.router.js'
 import userViewsRouter from '../src/routes/users.views.router.js'
@@ -21,8 +22,10 @@ import __dirname from './utils.js'
 import initializePassport from './config/passport.config.js'
 
 // Import services
-import ProductManager from './services/db/product.services.js'
-import CartManager from './services/db/cart.services.js'
+import ProductManager from './services/dao/db/product.services.js'
+import CartManager from './services/dao/db/cart.services.js'
+
+import MongoSingleton from './config/mongo-singleton.js'
 
 const pm = new ProductManager()
 const cm = new CartManager()
@@ -30,9 +33,6 @@ const cm = new CartManager()
 // Configure server
 const app = express()
 const PORT = 9090
-
-dotenv.config()
-const MONGO_URL = process.env.MONGO_URL
 
 // Middlewares
 
@@ -43,7 +43,7 @@ app.use(
     //path: Ruta a donde se buscará el archivo del session store.
     // store: new fileStore({path:"./sessions", ttl:40, retries: 0}),
     store: MongoStore.create({
-      mongoUrl: MONGO_URL,
+      mongoUrl: config.mongoUrl,
       mongoOptions: { useNewUrlParser: true, useUnifiedTopology: true },
       ttl: 300,
     }),
@@ -72,6 +72,7 @@ app.set('view engine', 'handlebars')
 // Configure routes
 app.use('/api/products', productsRouter)
 app.use('/api/carts', cartRouter)
+app.use('/api/tickets', ticketRouter)
 app.use('/api/sessions', sessionsRouter)
 app.use('/', viewsRouter)
 app.use('/users', userViewsRouter)
@@ -85,16 +86,25 @@ const httpServer = app.listen(PORT, () => {
 =                   Mongo                   =
 =============================================*/
 
-const connectMongoDB = async () => {
-  try {
-    await mongoose.connect(MONGO_URL)
-    console.log('Conectado con exito a MongoDB usando Moongose.')
-  } catch (error) {
-    console.error('No se pudo conectar a la BD usando Moongose: ' + error)
-    process.exit()
-  }
-}
-connectMongoDB()
+// const connectMongoDB = async () => {
+//   try {
+//     await mongoose.connect(config.mongoUrl)
+//     console.log('Conectado con exito a MongoDB usando Moongose.')
+//   } catch (error) {
+//     console.error('No se pudo conectar a la BD usando Moongose: ' + error)
+//     process.exit()
+//   }
+// }
+// connectMongoDB()
+
+// const mongoInstance = async () => {
+//   try {
+//     await MongoSingleton.getInstance()
+//   } catch (error) {
+//     console.error(error)
+//   }
+// }
+// mongoInstance()
 
 /*=============================================
 =                   Sockets                   =
@@ -124,19 +134,12 @@ socketServer.on('connection', (socket) => {
     }
   })
 
-  socket.on('createCart', async () => {
-    const newCart = await cm.createCart()
-    console.log(newCart)
-    socket.emit('clientCart', newCart)
-  })
-
-  socket.on('addToCart', async (cartId, prodId, quantity) => {
-    const prodAddedToCart = await cm.addProductToCartById(
-      cartId._id,
-      prodId,
-      quantity
-    )
-    console.log(prodAddedToCart)
+  //Ejercicio 2
+  const logs = []
+  //Message2 se utiliza para la parte de almacenar y devolver los logs completos.
+  socket.on('message2', (data) => {
+    logs.push({ socketid: socket.id, message: data })
+    socketServer.emit('log', { logs })
   })
 
   // on disconnect

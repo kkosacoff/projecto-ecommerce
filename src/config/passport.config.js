@@ -1,7 +1,7 @@
 import passport from 'passport'
 import passportLocal from 'passport-local'
 import GithubStrategy from 'passport-github2'
-import userModel from '../services/db/models/users.js'
+import userModel from '../services/dao/db/models/users.js'
 import { createHash, isValidPassword } from '../utils.js'
 import * as dotenv from 'dotenv'
 dotenv.config()
@@ -15,7 +15,7 @@ const initializePassport = () => {
     new LocalStrategy(
       { passReqToCallback: true, usernameField: 'email' },
       async (req, username, password, done) => {
-        const { first_name, last_name, email, age } = req.body
+        const { first_name, last_name, email, age, role } = req.body
         try {
           const exists = await userModel.findOne({ email })
           if (exists) {
@@ -27,6 +27,7 @@ const initializePassport = () => {
             last_name,
             email,
             age,
+            role,
             password: createHash(password),
           }
           const result = await userModel.create(user)

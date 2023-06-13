@@ -25,8 +25,12 @@ Price: ${{product.price}}
   {{/if}}
 </div>
 
+<div class="purchase">
+  <button id="purchase" onclick="purchaseCart()">Purchase Items</button>
+</div>
+
 </div>
 
 {{!-- Me traigo 2 scripts que hacen referenia al uso de los sockets --}}
 <script src="/socket.io/socket.io.js"></script>
-{{!-- <script src="/js/indexProducts.js"></script> --}}
+<script src="/js/cart.js"></script>

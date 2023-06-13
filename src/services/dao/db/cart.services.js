@@ -1,4 +1,5 @@
 import cartsModel from './models/carts.js'
+import productsModel from './models/products.js'
 
 export default class CartManager {
   constructor() {
@@ -74,5 +75,40 @@ export default class CartManager {
     } else {
       return false
     }
+  }
+
+  calculateTotal = async (cartId) => {
+    let cart = await cartsModel.findById({ _id: cartId })
+    let total = 0
+    cart.products.map((item) => {
+      total = total + parseFloat(item.product.price) * parseFloat(item.quantity)
+    })
+    return total
+  }
+
+  purchaseCart = async (cartId) => {
+    let cart = await cartsModel.findById({ _id: cartId })
+    const purchaseObj = {
+      outOfStockProducts: [],
+      prodsToPurchase: [],
+    }
+    cart.products.map(async (item) => {
+      if (item.quantity > item.product.stock) {
+        purchaseObj.outOfStockProducts.push(item)
+      } else {
+        item.product.stock = item.product.stock - item.quantity
+        purchaseObj.prodsToPurchase.push(item)
+        this.deleteProductInCartById(cartId, item.product._id)
+        console.log(item)
+        let prd = await productsModel.updateOne(
+          { _id: item.product._id },
+          item.product
+        )
+      }
+    })
+
+    let result = await cartsModel.updateOne({ _id: cartId }, cart)
+
+    return purchaseObj
   }
 }

@@ -20,4 +20,10 @@ router.delete('/:cid', cc.clearCartController)
 // Delete product in cart by ID
 router.delete('/:cid/products/:pid', cc.deleteProductInCartByIdController)
 
+// Purchase items from cart
+router.post('/:cid/purchase', cc.purchaseCartController)
+
+// User add to cart
+router.post('/add-to-cart', cc.userAddToCartController)
+
 export default router

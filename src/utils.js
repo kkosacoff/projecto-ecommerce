@@ -11,9 +11,9 @@ export const createHash = (password) =>
 
 // Compare DB stored password with hash
 export const isValidPassword = (user, password) => {
-  console.log(
-    `Datos a validar: user-password: ${user.password}, password: ${password}`
-  )
+  // console.log(
+  //   `Datos a validar: user-password: ${user.password}, password: ${password}`
+  // )
   return bcrypt.compareSync(password, user.password)
 }
 

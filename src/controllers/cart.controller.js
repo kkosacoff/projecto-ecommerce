@@ -1,6 +1,8 @@
-import CartManager from '../services/db/cart.services.js'
+import CartManager from '../services/dao/db/cart.services.js'
+import TicketManager from '../services/dao/db/ticket.services.js'
 
 const cm1 = new CartManager('')
+const tm1 = new TicketManager()
 
 export default class CartController {
   createCartController = async (req, res) => {
@@ -35,7 +37,6 @@ export default class CartController {
       req.params.pid,
       req.body.quantity
     )
-
     if (addProd) {
       res.send({
         status: 'success',
@@ -68,6 +69,46 @@ export default class CartController {
         msg: `Product ${req.params.pid} deleted from cart ${req.params.cid} successfuly`,
       })
     } else {
+    }
+  }
+
+  userAddToCartController = async (req, res) => {
+    if (req.session.cart) {
+      const prodAdded = await cm1.addProductToCartById(
+        req.session.cart._id.toString(),
+        req.body.prodId,
+        req.body.quantity
+      )
+      if (prodAdded) {
+        res.status(200).send({ status: 'success', payload: prodAdded })
+      }
+    }
+  }
+
+  purchaseCartController = async (req, res) => {
+    const purchasedCart = await cm1.purchaseCart(req.params.cid)
+
+    let total = purchasedCart.prodsToPurchase.reduce(
+      (acc, item) => acc + item.product.price * item.quantity,
+      0
+    )
+
+    const newTicket = await tm1.createTicket(total, req.session.user.email)
+
+    if (newTicket) {
+      res
+        .send({
+          status: 'Success',
+          msg: `Ticket ${newTicket} por un total de $ ${total} generado con exito. Fue enviado a ${newTicket.purchaser}`,
+          payload: newTicket,
+        })
+        .status(200)
+    } else {
+      res
+        .send({
+          status: 'error',
+        })
+        .status(400)
     }
   }
 }
