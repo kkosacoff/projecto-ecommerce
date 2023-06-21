@@ -1,19 +1,10 @@
 import { Router } from 'express'
 import cookieParser from 'cookie-parser'
+import checkRole from '../services/middlewares/check-role.js'
 
 const router = Router()
 
 router.use(cookieParser('HOLACOMO26323'))
-
-function checkRole(role) {
-  return function (req, res, next) {
-    if (req.session.user && req.session.user.role === role) {
-      return next()
-    } else {
-      res.status(403).send('Unauthorized')
-    }
-  }
-}
 
 router.get('/chat', checkRole('User'), async (req, res) => {
   res.render('chat')

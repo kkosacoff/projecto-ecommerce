@@ -1,13 +1,11 @@
 import { Router } from 'express'
-
-// import ProductManager from '../services/fs/ProductManager.js'
-// import ProductManager from '../services/db/product.services.js'
-
 import ProductController from '../controllers/product.controller.js'
 
+const router = Router()
 const pc = new ProductController()
 
-const router = Router()
+// Generate mock products
+router.get('/mockingproducts', pc.getMockProducts)
 
 // Endpoint for showing all products
 router.get('/', pc.getProductsController)

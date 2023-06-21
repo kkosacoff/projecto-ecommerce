@@ -10,10 +10,6 @@ router.get('/register', (req, res) => {
   res.render('register')
 })
 
-router.get('/chat', async (req, res) => {
-  res.render('chat')
-})
-
 // ? Current
 router.get('/current', async (req, res) => {
   if (!req.user)

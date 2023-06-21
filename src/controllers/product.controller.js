@@ -1,11 +1,23 @@
-import ProductManager from '../services/dao/db/product.services.js'
 import { productService } from '../services/factory.js'
+import { generateProduct } from '../utils.js'
 
-const pm = new ProductManager()
 const persistenceFactory = productService
 const baseUrl = 'http://localhost:9090/api/products'
 
 export default class ProductController {
+  getMockProducts = async (req, res) => {
+    try {
+      let products = []
+      for (let i = 0; i < 100; i++) {
+        products.push(generateProduct())
+      }
+      res.send({ status: 'success', payload: products })
+    } catch (error) {
+      console.error(error)
+      res.status(500).send({ error: error, message: 'Cannot get products' })
+    }
+  }
+
   addProductController = async (req, res) => {
     const newProd = await persistenceFactory.addProduct(req.body)
 
