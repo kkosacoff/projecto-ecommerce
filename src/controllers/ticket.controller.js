@@ -1,4 +1,4 @@
-import TicketManager from '../services/dao/db/ticket.services.js'
+import TicketManager from '../services/dao/db/services/ticket.services.js'
 
 const tm1 = new TicketManager()
 

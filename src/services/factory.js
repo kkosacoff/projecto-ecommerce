@@ -19,7 +19,7 @@ switch (config.persistence) {
     }
     mongoInstance()
     const { default: ProductServiceMongo } = await import(
-      './dao/db/product.services.js'
+      './dao/db/services/product.services.js'
     )
     productService = new ProductServiceMongo()
     // console.log('Product service loaded:')

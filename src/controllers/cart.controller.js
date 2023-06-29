@@ -1,5 +1,5 @@
-import CartManager from '../services/dao/db/cart.services.js'
-import TicketManager from '../services/dao/db/ticket.services.js'
+import CartManager from '../services/dao/db/services/cart.services.js'
+import TicketManager from '../services/dao/db/services/ticket.services.js'
 
 const cm1 = new CartManager('')
 const tm1 = new TicketManager()

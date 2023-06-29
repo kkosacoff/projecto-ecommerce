@@ -1,5 +1,7 @@
 import * as dotenv from 'dotenv'
 import { Command } from 'commander'
+import { prodLogger, debugLogger } from '../logger.js'
+// import { log } from 'winston'
 
 const program = new Command() //Crea la instancia de comandos de commander.
 
@@ -22,10 +24,13 @@ dotenv.config({
       : './src/config/.env.development',
 })
 
+const logger = environment === 'prod' ? prodLogger : debugLogger
+
 export default {
   port: process.env.PORT,
   mongoUrl: process.env.MONGO_URL,
   persistence: program.opts().persist,
   githubClient: process.env.GITHUB_CLIENT_ID,
   githubSecret: process.env.GITHUB_CLIENT_SECRET,
+  logger: logger,
 }

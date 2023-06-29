@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import passport from 'passport'
-import CartManager from '../services/dao/db/cart.services.js'
+import CartManager from '../services/dao/db/services/cart.services.js'
 import UserDTO from '../services/dto/user.dto.js'
 
 const router = Router()

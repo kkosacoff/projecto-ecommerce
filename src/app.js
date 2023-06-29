@@ -22,10 +22,8 @@ import __dirname from './utils.js'
 import initializePassport from './config/passport.config.js'
 
 // Import services
-import ProductManager from './services/dao/db/product.services.js'
-import CartManager from './services/dao/db/cart.services.js'
-
-import MongoSingleton from './config/mongo-singleton.js'
+import ProductManager from './services/dao/db/services/product.services.js'
+import CartManager from './services/dao/db/services/cart.services.js'
 
 const pm = new ProductManager()
 const cm = new CartManager()
@@ -34,8 +32,29 @@ const cm = new CartManager()
 const app = express()
 const PORT = 9090
 
-// Middlewares
+/*=============================================
+=                   Middlewares               =
+=============================================*/
+// ? Looger
+const logger = config.logger
+app.use(logger)
 
+// Logger Test
+// Define some routes for testing
+app.get('/loggerTest', (req, res) => {
+  // Testing logger
+  const logger = req.logger
+  logger.debug('This is a debug message')
+  logger.http('This is a http message')
+  logger.info('This is an info message')
+  logger.warning('This is a warning message')
+  logger.error('This is an error message')
+  logger.fatal('This is a fatal message')
+
+  res.send('Logger test completed, check your console and log files')
+})
+
+// ? Sessions
 app.use(
   session({
     //ttl: Time to live in seconds,
@@ -57,7 +76,7 @@ initializePassport()
 app.use(passport.initialize())
 app.use(passport.session())
 
-// Enable endpoints to accept JSON requests
+// ? Enable endpoints to accept JSON requests
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 

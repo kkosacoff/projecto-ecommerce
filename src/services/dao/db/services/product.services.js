@@ -1,4 +1,4 @@
-import productsModel from './models/products.js'
+import productsModel from '../models/products.js'
 
 export default class ProductManager {
   static globalId = 0 // product code number global tracker

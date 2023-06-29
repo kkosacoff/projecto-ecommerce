@@ -1,5 +1,5 @@
-import cartsModel from './models/carts.js'
-import productsModel from './models/products.js'
+import cartsModel from '../models/carts.js'
+import productsModel from '../models/products.js'
 
 export default class CartManager {
   constructor() {
