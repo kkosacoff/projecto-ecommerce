@@ -1,0 +1,157 @@
+openapi: '3.0.0'
+info:
+  version: '1.0.0'
+  title: 'Product API'
+  description: 'APIs for Product Management'
+
+paths:
+  /api/products:
+    get:
+      tags:
+        - Products
+      summary: 'Get all products'
+      operationId: 'getProductsController'
+      parameters:
+        - name: 'page'
+          in: 'query'
+          schema:
+            type: 'integer'
+            format: 'int32'
+        - name: 'limit'
+          in: 'query'
+          schema:
+            type: 'integer'
+            format: 'int32'
+        - name: 'filter'
+          in: 'query'
+          schema:
+            type: 'string'
+        - name: 'sort'
+          in: 'query'
+          schema:
+            type: 'string'
+      responses:
+        '200':
+          description: 'Successful operation'
+          content:
+            application/json:
+              schema:
+                type: 'array'
+                items:
+                  $ref: '#/components/schemas/Product'
+
+    post:
+      tags:
+        - Products
+      summary: 'Add a new product'
+      operationId: 'addProductController'
+      requestBody:
+        description: 'Product object that needs to be added'
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      responses:
+        '200':
+          description: 'Successful operation'
+        '400':
+          description: 'Mandatory fields are missing'
+
+  /api/products/{pid}:
+    tags: 'Products'
+    get:
+      tags:
+        - Products
+      summary: 'Get a product by ID'
+      operationId: 'getProductByIdController'
+      parameters:
+        - name: 'pid'
+          in: 'path'
+          description: 'Product ID'
+          required: true
+          schema:
+            type: 'string'
+      responses:
+        '200':
+          description: 'Successful operation'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          description: 'Product ID not found'
+    put:
+      tags:
+        - Products
+      summary: 'Update an existing product'
+      operationId: 'updateProductByIdController'
+      parameters:
+        - name: 'pid'
+          in: 'path'
+          description: 'Product ID'
+          required: true
+          schema:
+            type: 'string'
+      requestBody:
+        description: 'Product object that needs to be updated'
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      responses:
+        '200':
+          description: 'Successful operation'
+        '404':
+          description: 'Product ID not found'
+    delete:
+      tags:
+        - Products
+      summary: 'Delete a product by ID'
+      operationId: 'deleteProductByIdController'
+      parameters:
+        - name: 'pid'
+          in: 'path'
+          description: 'Product ID'
+          required: true
+          schema:
+            type: 'string'
+      responses:
+        '200':
+          description: 'Successful operation'
+        '404':
+          description: 'Product ID not found'
+
+components:
+  schemas:
+    Product:
+      type: object
+      properties:
+        _id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        code:
+          type: string
+        price:
+          type: number
+        status:
+          type: string
+          enum: ['Out of Stock', 'Inactive', 'Active']
+        stock:
+          type: integer
+        category:
+          type: string
+        thumbnails:
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time

@@ -1,11 +1,12 @@
 // Import outside modules
 import express from 'express'
 import { engine } from 'express-handlebars'
-import mongoose from 'mongoose'
 import session from 'express-session'
 import MongoStore from 'connect-mongo'
 import passport from 'passport'
 import config from './config/config.js'
+import swaggerJSDoc from 'swagger-jsdoc'
+import swaggerUIExpress from 'swagger-ui-express'
 
 // Import routers
 import productsRouter from '../src/routes/products.router.js'
@@ -23,10 +24,8 @@ import initializePassport from './config/passport.config.js'
 
 // Import services
 import ProductManager from './services/dao/db/services/product.services.js'
-import CartManager from './services/dao/db/services/cart.services.js'
 
 const pm = new ProductManager()
-const cm = new CartManager()
 
 // Configure server
 const app = express()
@@ -35,6 +34,25 @@ const PORT = 9090
 /*=============================================
 =                   Middlewares               =
 =============================================*/
+
+// ? Swagger Config
+const swaggerOptions = {
+  definition: {
+    openapi: '3.0.1',
+    info: {
+      title: 'API Documentation for E-Commerce Project',
+      description:
+        'This documentation describes the API endpoints used for the final project of Coderhouse backend course',
+    },
+  },
+  apis: [`./src/docs/**/*.yaml`],
+}
+
+// creamos el specs
+const specs = swaggerJSDoc(swaggerOptions)
+// Declamos swagger API - endpoint
+app.use('/apidocs', swaggerUIExpress.serve, swaggerUIExpress.setup(specs))
+
 // ? Looger
 const logger = config.logger
 app.use(logger)

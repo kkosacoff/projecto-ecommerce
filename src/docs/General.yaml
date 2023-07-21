@@ -1,0 +1,24 @@
+openapi: '3.0.0'
+components:
+  schemas:
+    SuccessMessage:
+      type: object
+      properties:
+        status:
+          type: string
+          example: 'Success'
+        msg:
+          type: string
+          example: 'Operation completed successfully'
+        payload:
+          type: object
+          description: 'Optional field to return the created/updated object, depending on your implementation'
+    Error:
+      type: object
+      properties:
+        status:
+          type: string
+          example: 'Error'
+        msg:
+          type: string
+          example: 'Error details here'
