@@ -20,8 +20,9 @@ export default class CartManager {
 
   addProductToCartById = async (cartId, prodId, quantity) => {
     const cart = await cartsModel.findById({ _id: cartId })
+    const prod = await productsModel.findById({ _id: prodId })
 
-    if (cart) {
+    if (cart && prod && quantity) {
       const productAlreadyInCart = cart.products.some((item) => {
         if (item.product._id.toString() == prodId) {
           return true
@@ -29,7 +30,6 @@ export default class CartManager {
           return false
         }
       })
-      // console.log(productAlreadyInCart)
       if (!productAlreadyInCart) {
         cart.products.push({ product: prodId, quantity: quantity })
       } else {
@@ -44,7 +44,7 @@ export default class CartManager {
       let result = await cartsModel.updateOne({ _id: cartId }, cart)
       return cart, result
     } else {
-      console.log(`Cart ${cartId} couldn't be found`)
+      console.log(`Cart ${cartId} or product ${prodId} couldn't be found`)
       return false
     }
   }

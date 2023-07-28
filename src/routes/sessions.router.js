@@ -43,7 +43,7 @@ router.post(
 
 router.get('/failedRegister', async (req, res) => {
   console.log('Failed strategy')
-  res.send({ error: 'Failed' })
+  res.send({ status: 'error' }).status(302)
 })
 // ? ---
 
@@ -91,18 +91,19 @@ router.post(
     req.session.cart = cart
     req.session.user = newUser
 
-    console.log(req.session.cart)
-    res.send({
-      status: 'success',
-      message: 'user logged in',
-      payload: newUser,
-    })
+    res
+      .send({
+        status: 'success',
+        message: 'user logged in',
+        payload: newUser,
+      })
+      .status(200)
   }
 )
 
 router.get('failedLogin', async (req, res) => {
   console.log('Failed strategy')
-  res.send({ error: 'Failed' })
+  res.send({ status: 'error' })
 })
 // ? ---
 

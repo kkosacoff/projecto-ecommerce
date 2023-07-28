@@ -22,15 +22,18 @@ export default class ProductController {
     const newProd = await persistenceFactory.addProduct(req.body)
 
     if (newProd) {
-      res.send({
-        status: 'Success',
+      res.status(201).send({
+        status: 'success',
         msg: `Product ${newProd.code} created successfully`,
+        payload: newProd,
       })
     } else {
-      res.send({
-        status: 'error',
-        msg: `Product couldn't be created`,
-      })
+      res
+        .send({
+          status: 'error',
+          msg: `Product couldn't be created`,
+        })
+        .status(400)
     }
   }
 
@@ -70,21 +73,33 @@ export default class ProductController {
     }
 
     if (products) {
-      res.send({
-        msg: 'Success',
-        ...respObj,
-      })
+      res
+        .send({
+          msg: 'success',
+          ...respObj,
+        })
+        .status(200)
     } else {
-      res.send({ msg: `Couldn't get products` })
+      res.send({ msg: `Couldn't get products` }).status(400)
     }
   }
 
   getProductByIdController = async (req, res) => {
     const product = await persistenceFactory.getProductById(req.params.pid)
     if (product) {
-      res.send(product)
+      res
+        .send({
+          status: 'success',
+          payload: product,
+        })
+        .status(201)
     } else {
-      res.send({ msg: `Product ID ${req.params.pid} not found` })
+      res
+        .send({
+          msg: `Product ID ${req.params.pid} not found`,
+          status: 'error',
+        })
+        .status(400)
     }
   }
 
@@ -94,15 +109,20 @@ export default class ProductController {
       req.body
     )
     if (updatedProd) {
-      res.send({
-        status: 'Success',
-        msg: `Product ${req.params.pid} updated successfully`,
-      })
+      res
+        .send({
+          status: 'success',
+          msg: `Product ${req.params.pid} updated successfully`,
+          payload: updatedProd,
+        })
+        .status(201)
     } else {
-      res.send({
-        status: 'error',
-        msg: `Product ${req.params.pid} doesn't exist`,
-      })
+      res
+        .send({
+          status: 'error',
+          msg: `Product ${req.params.pid} doesn't exist`,
+        })
+        .status(400)
     }
   }
 

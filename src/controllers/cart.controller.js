@@ -22,12 +22,14 @@ export default class CartController {
     const cart = await cm1.getCartById(req.params.cid)
 
     if (cart) {
-      res.send({ status: 'Success', msg: cart })
+      res.send({ status: 'Success', payload: cart }).status(200)
     } else {
-      res.send({
-        status: 'Error',
-        msg: `Cart ${req.params.cid} could not be found`,
-      })
+      res
+        .send({
+          status: 'Error',
+          msg: `Cart ${req.params.cid} could not be found`,
+        })
+        .status(400)
     }
   }
 
@@ -37,13 +39,19 @@ export default class CartController {
       req.params.pid,
       req.body.quantity
     )
+
     if (addProd) {
-      res.send({
-        status: 'success',
-        msg: `${req.body.quantity} units of product ${req.params.pid}, added to cart ${req.params.cid}`,
-      })
+      res
+        .send({
+          status: 'success',
+          msg: `${req.body.quantity} units of product ${req.params.pid}, added to cart ${req.params.cid}`,
+          payload: addProd,
+        })
+        .status(202)
     } else {
-      res.send({ status: 'error', msg: 'Product could not be added' })
+      res
+        .send({ status: 'error', msg: 'Product could not be added' })
+        .status(400)
     }
   }
 
