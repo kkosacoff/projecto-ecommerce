@@ -54,17 +54,19 @@ router.get('/products', checkPermission('view_product'), async (req, res) => {
 
 // Cart
 router.get('/cart/:cid', async (req, res) => {
-  const resp = await fetch(`http://localhost:9090/api/carts/${req.params.cid}`)
+  const baseUrl = `http://${req.headers.host}`
+  console.log(`${baseUrl}/api/carts/${req.params.cid}`)
+  const resp = await fetch(`${baseUrl}/api/carts/${req.params.cid}`)
   const jsonData = await resp.json()
+  console.log(jsonData)
   const products = jsonData.payload.products
   res.render('cartView', { productsInCart: products })
 })
 
 // Ticket
 router.get('/ticket/:tid', async (req, res) => {
-  const resp = await fetch(
-    `http://localhost:9090/api/tickets/${req.params.tid}`
-  )
+  const baseUrl = `http://${req.headers.host}`
+  const resp = await fetch(`${baseUrl}/api/tickets/${req.params.tid}`)
   const jsonData = await resp.json()
 
   res.render('ticketView', { data: jsonData })

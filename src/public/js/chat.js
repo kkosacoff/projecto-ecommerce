@@ -5,7 +5,7 @@ const input = document.getElementById('textoEntrada')
 const log = document.getElementById('log')
 
 const getSession = async () => {
-  const resp = await fetch(`http://localhost:9090/api/sessions/current`, {
+  const resp = await fetch(`/api/sessions/current`, {
     method: 'GET',
   })
 

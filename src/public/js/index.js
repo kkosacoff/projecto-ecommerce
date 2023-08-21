@@ -24,26 +24,6 @@ const createProductObject = () => {
   return product
 }
 
-function uploadFiles() {
-  // Append files to formData
-  const productFile = document.getElementById('product').files[0]
-
-  if (productFile) formData.append('product', productFile)
-
-  fetch('/api/users/:uid/documents', {
-    method: 'POST',
-    body: formData,
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      console.log(data)
-      // Handle the response, maybe update the UI to indicate successful upload.
-    })
-    .catch((error) => {
-      console.error('Error:', error)
-    })
-}
-
 const handleSubmitCreate = async () => {
   const formData = new FormData()
   const formProduct = createProductObject()
@@ -62,7 +42,7 @@ const handleSubmitCreate = async () => {
     formData.append('formProduct', JSON.stringify(formProduct))
     console.log(formData)
 
-    const resp = await fetch(`http://localhost:9090/api/products`, {
+    const resp = await fetch(`/api/products`, {
       method: 'POST',
       body: formData,
       // headers: {
@@ -83,7 +63,7 @@ const handleSubmitCreate = async () => {
 }
 
 const handleDelete = async (prodId) => {
-  const resp = await fetch(`http://localhost:9090/api/products/${prodId}`, {
+  const resp = await fetch(`/api/products/${prodId}`, {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',

@@ -1,19 +1,24 @@
 const socket = io()
 const cart = document.getElementById('cart')
-const logout = document.getElementById('logoutButton')
+// const logout = document.getElementById('logoutButton')
 
 const createCart = async () => {
-  const resp = await fetch(`http://localhost:9090/api/sessions/current`, {
+  const baseURL = `${window.location.protocol}//${window.location.host}`
+  console.log(baseURL)
+  const apiURL = `${baseURL}/api/data`
+  const resp = await fetch(`${baseURL}/api/sessions/current`, {
     method: 'GET',
   })
 
   const jsonData = await resp.json()
   window.cart = jsonData.cart
+  console.log(window.cart)
 
   const a = document.createElement('a')
   a.textContent = 'View Cart'
   a.className = 'view-cart'
-  a.href = `http://localhost:9090/cart/${window.cart._id}`
+
+  a.href = `${baseURL}/cart/${window.cart._id}`
   cart.append(a)
 }
 
@@ -26,7 +31,9 @@ const addToCart = async (prodId) => {
     prodId,
     quantity: quant,
   }
-  const resp = await fetch(`http://localhost:9090/api/carts/add-to-cart`, {
+  const baseURL = `${window.location.protocol}//${window.location.host}`
+
+  const resp = await fetch(`${baseURL}/api/carts/add-to-cart`, {
     method: 'POST',
     body: JSON.stringify(obj),
     headers: {

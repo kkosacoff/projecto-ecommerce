@@ -17,14 +17,6 @@ Price: ${{product.price}}
 </ul>
 
 
-<div class="page-buttons">
-  {{#if hasPrevPage}}
-  <a href="{{this.prevLink}}">Anterior</a>
-  {{/if}}
-  {{#if hasNextPage}}
-  <a href="{{this.nextLink}}">Siguiente</a>
-  {{/if}}
-</div>
 
 <div class="purchase">
   <button id="purchase" onclick="purchaseCart()">Purchase Items</button>
