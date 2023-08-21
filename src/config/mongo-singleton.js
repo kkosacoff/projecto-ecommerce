@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+import * as dotenv from 'dotenv'
 import config from './config.js'
 
 export default class MongoSingleton {
@@ -19,7 +20,7 @@ export default class MongoSingleton {
 
   #connectMongoDB = async () => {
     try {
-      await mongoose.connect(config.mongoUrl)
+      await mongoose.connect(process.env.MONGO_URL)
       console.log('Conectado con exito a MongoDB usando Moongose.')
     } catch (error) {
       console.error('No se pudo conectar a la BD usando Moongose: ' + error)
