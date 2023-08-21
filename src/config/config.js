@@ -1,7 +1,6 @@
 import * as dotenv from 'dotenv'
 import { Command } from 'commander'
 import { prodLogger, debugLogger } from '../logger.js'
-// import { log } from 'winston'
 
 const program = new Command() //Crea la instancia de comandos de commander.
 
@@ -18,10 +17,7 @@ console.log('Persistence Mode Option: ', program.opts().persist)
 const environment = program.opts().mode
 
 dotenv.config({
-  path:
-    environment === 'prod'
-      ? './src/config/.env.production'
-      : './src/config/.env.development',
+  path: './src/config/.env.production',
 })
 
 const logger = environment === 'prod' ? prodLogger : debugLogger
