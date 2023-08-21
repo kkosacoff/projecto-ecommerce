@@ -1,6 +1,14 @@
 import { Router } from 'express'
 import cookieParser from 'cookie-parser'
 import checkRole from '../services/middlewares/check-role.js'
+import checkPermission from '../services/middlewares/check-permission.js'
+import UserController from '../controllers/user.controller.js'
+import ProductController from '../controllers/product.controller.js'
+import ViewController from '../controllers/view.controller.js'
+
+const uc = new UserController()
+const pc = new ProductController()
+const vc = new ViewController()
 
 const router = Router()
 
@@ -10,18 +18,29 @@ router.get('/chat', checkRole('User'), async (req, res) => {
   res.render('chat')
 })
 
-router.get('/adminProducts', checkRole('Admin'), async (req, res) => {
-  res.render('adminProducts')
-})
+// Admin Products
+
+router.get(
+  '/adminProducts',
+  checkPermission('view_admin_product'),
+  vc.getProductsControllerView
+)
+
+// Admin Users
+router.get(
+  '/adminUsers',
+  checkPermission('view_admin_product'),
+  vc.getUsersView
+)
 
 // Product List and Add to Cart
-router.get('/products', checkRole('User'), async (req, res) => {
-  const resp = await fetch(`http://localhost:9090/api${req.url}`)
+router.get('/products', checkPermission('view_product'), async (req, res) => {
+  const baseUrl = `http://${req.headers.host}/`
+  const resp = await fetch(`${baseUrl}api${req.url}`)
   const jsonData = await resp.json()
 
-  jsonData.prevLink = jsonData.prevLink.replaceAll('api', '')
-  jsonData.nextLink = jsonData.nextLink.replaceAll('api', '')
-  console.log(req.session.user)
+  jsonData.prevLink = jsonData.prevLink.replaceAll('/api', '')
+  jsonData.nextLink = jsonData.nextLink.replaceAll('/api', '')
 
   res.render('productPage', {
     productArray: jsonData.payload,
@@ -34,20 +53,20 @@ router.get('/products', checkRole('User'), async (req, res) => {
 })
 
 // Cart
-router.get('/cart/:cid', checkRole('User'), async (req, res) => {
+router.get('/cart/:cid', async (req, res) => {
   const resp = await fetch(`http://localhost:9090/api/carts/${req.params.cid}`)
   const jsonData = await resp.json()
-  const products = jsonData.msg.products
+  const products = jsonData.payload.products
   res.render('cartView', { productsInCart: products })
 })
 
-router.get('/ticket/:tid', checkRole('User'), async (req, res) => {
+// Ticket
+router.get('/ticket/:tid', async (req, res) => {
   const resp = await fetch(
     `http://localhost:9090/api/tickets/${req.params.tid}`
   )
   const jsonData = await resp.json()
-  console.log('View Data')
-  console.log(jsonData)
+
   res.render('ticketView', { data: jsonData })
 })
 

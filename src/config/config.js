@@ -32,5 +32,7 @@ export default {
   persistence: program.opts().persist,
   githubClient: process.env.GITHUB_CLIENT_ID,
   githubSecret: process.env.GITHUB_CLIENT_SECRET,
+  gmailAccount: process.env.GOOGLE_APP_EMAIL,
+  gmailAppPassword: process.env.GOOGLE_APP_PASSWORD,
   logger: logger,
 }

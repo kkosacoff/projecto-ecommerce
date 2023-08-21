@@ -29,6 +29,7 @@ const initializePassport = () => {
             age,
             role,
             password: createHash(password),
+            lastConnection: Date.now(),
           }
           const result = await userModel.create(user)
           return done(null, result)
@@ -51,7 +52,11 @@ const initializePassport = () => {
             console.log('User does not exist')
             return done(null, false)
           }
-          if (!isValidPassword(user, password)) return done(null, false)
+          if (!isValidPassword(user, password)) {
+            return done(null, false)
+          }
+          user.lastConnection = Date.now()
+          await user.save()
           return done(null, user)
         } catch (err) {
           return done(err)
@@ -87,6 +92,7 @@ const initializePassport = () => {
               email: profile._json.email,
               password: '',
               loggedBy: 'github',
+              lastConnection: Date.now(),
             }
             const result = await userModel.create(newUser)
             return done(null, result)

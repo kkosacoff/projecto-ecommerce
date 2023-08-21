@@ -33,14 +33,27 @@ const productSchema = new mongoose.Schema(
     stock: numberTypeSchemaNonUniqueRequired,
     category: stringTypeSchemaNonUniqueRequired,
     thumbnails: {
-      type: Array,
-      required: true,
+      type: [
+        {
+          name: String,
+          reference: String,
+        },
+      ],
+    },
+    owner: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'users',
+      default: 'Admin',
     },
   },
   { timestamps: true }
 )
 
 productSchema.plugin(mongoosePaginate)
+
+productSchema.pre('findOne', function () {
+  this.populate('owner')
+})
 
 const productsModel = mongoose.model(collectionName, productSchema)
 export default productsModel

@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import CartController from '../controllers/cart.controller.js'
+import checkPermission from '../services/middlewares/check-permission.js'
 
 const cc = new CartController()
 

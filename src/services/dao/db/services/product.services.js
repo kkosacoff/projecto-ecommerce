@@ -18,6 +18,7 @@ export default class ProductManager {
     stock,
     category,
     thumbnails,
+    owner,
   }) => {
     const newProduct = await productsModel.create({
       title,
@@ -28,6 +29,7 @@ export default class ProductManager {
       stock,
       category,
       thumbnails,
+      owner,
     })
     return newProduct
   }
@@ -52,7 +54,7 @@ export default class ProductManager {
   }
 
   getProductById = async (id) => {
-    const product = productsModel.findById(id)
+    const product = productsModel.findById(id).populate('owner', '_id email')
     return product ? product : false
   }
 

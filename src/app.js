@@ -1,4 +1,5 @@
 // Import outside modules
+import path from 'path'
 import express from 'express'
 import { engine } from 'express-handlebars'
 import session from 'express-session'
@@ -7,6 +8,7 @@ import passport from 'passport'
 import config from './config/config.js'
 import swaggerJSDoc from 'swagger-jsdoc'
 import swaggerUIExpress from 'swagger-ui-express'
+import exphbs from 'express-handlebars'
 
 // Import routers
 import productsRouter from '../src/routes/products.router.js'
@@ -15,6 +17,8 @@ import ticketRouter from '../src/routes/tickets.router.js'
 import viewsRouter from '../src/routes/views.router.js'
 import sessionsRouter from '../src/routes/sessions.router.js'
 import userViewsRouter from '../src/routes/users.views.router.js'
+import emailRouter from '../src/routes/email.router.js'
+import userRouter from '../src/routes/users.router.js'
 
 // Import utils
 import __dirname from './utils.js'
@@ -101,8 +105,30 @@ app.use(express.urlencoded({ extended: true }))
 //Carpeta public
 app.use(express.static(__dirname + '/public/'))
 
+// ? Make session data available in all hbs views
+app.use((req, res, next) => {
+  res.locals.session = req.session
+  next()
+})
+// Set up folder for uploads
+let uploadFolder = path.join(__dirname, '../uploads/')
+console.log(uploadFolder)
+app.use(express.static(uploadFolder))
+app.use(express.static('uploads'))
+
 //Handlebars set-up
-app.engine('handlebars', engine())
+const hbs = exphbs.create({
+  helpers: {
+    eq: function (v1, v2) {
+      return v1 === v2
+    },
+    log: function (something) {
+      console.log(something)
+    },
+  },
+})
+
+app.engine('handlebars', hbs.engine)
 app.set('views', __dirname + '/views')
 app.set('view engine', 'handlebars')
 
@@ -111,8 +137,18 @@ app.use('/api/products', productsRouter)
 app.use('/api/carts', cartRouter)
 app.use('/api/tickets', ticketRouter)
 app.use('/api/sessions', sessionsRouter)
+app.use('/api/users', userRouter)
 app.use('/', viewsRouter)
 app.use('/users', userViewsRouter)
+app.use('/email', emailRouter)
+
+app.get('/', (req, res) => {
+  if (!req.session.user) {
+    res.redirect('/users/login')
+  } else {
+    res.redirect('/products')
+  }
+})
 
 // Activate server
 const httpServer = app.listen(PORT, () => {
@@ -156,22 +192,14 @@ socketServer.on('connection', (socket) => {
   console.log('Nuevo cliente conectado')
 
   socket.on('addProduct', async (product) => {
-    const addProd = await pm.addProduct(product)
-    if (addProd) {
-      socket.emit('updateProductList', addProd)
-    }
+    socket.emit('updateProductList', product)
   })
 
   socket.on('deleteProduct', async (prodId) => {
-    try {
-      await pm.deleteProductById(prodId)
-      socket.emit('removeProductFromList', prodId)
-    } catch {
-      throw new Error()
-    }
+    socket.emit('removeProductFromList', prodId)
   })
 
-  //Ejercicio 2
+  //Chat
   const logs = []
   //Message2 se utiliza para la parte de almacenar y devolver los logs completos.
   socket.on('message2', (data) => {

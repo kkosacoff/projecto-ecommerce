@@ -20,7 +20,8 @@ const createCart = async () => {
 window.onload = createCart()
 
 const addToCart = async (prodId) => {
-  const quant = document.getElementById(prodId).childNodes[7].value
+  const quant = document.getElementById(prodId).childNodes[9].value
+  console.log(quant)
   const obj = {
     prodId,
     quantity: quant,

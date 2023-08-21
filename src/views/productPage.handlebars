@@ -2,33 +2,41 @@
 <h1>Product List</h1>
 
 <div>
-  <h2>Hola {{user.name}}!</h2>
-  <p>Tu email es {{user.email}}</p>
-  <p>Tienes {{user.age}}</p>
+  <h2>Hi {{user.name}}!</h2>
+  <p>You email is {{user.email}}</p>
+  <p>You are {{user.age}} old</p>
+  <p>
+    <a href="/users/{{user.id}}/upload">Upload your files</a>
+  </p>
   <button id="logoutButton">Logout</button>
 </div>
 
-<ul id="productList">
-  {{#each productArray}}
-  <li id="{{_id}}">
-    <h2>{{title}}</h2>
-    <h3>
-${{price}}
-    </h3>
-    <label>quantity: </label>
-    <input type="number">
-    <button class="add-button" onclick="addToCart('{{_id}}')">Add To Cart</button>
-  </li>
-  {{/each}}
-</ul>
+
+  <!-- Product Grid -->
+  <div class="container">
+    <div class="products">
+      {{#each productArray}}
+      <div  id="{{_id}}" class="product-card">
+        {{#each thumbnails}}
+        <img src="{{this.reference}}" alt="{{ title }}" class="product-image">
+        {{/each}}
+        <div class="product-title">{{ title }}</div>
+        <div class="product-price">${{ price }}</div>
+        <label>quantity: </label>
+        <input type="number">
+        <button class="add-button" onclick="addToCart('{{_id}}')">Add to Cart</button>
+      </div>
+      {{/each}}
+    </div>
+  </div>
 
 
 <div class="page-buttons">
   {{#if hasPrevPage}}
-  <a href="{{this.prevLink}}">Anterior</a>
+  <a href="{{prevLink}}">Anterior</a>
   {{/if}}
   {{#if hasNextPage}}
-  <a href="{{this.nextLink}}">Siguiente</a>
+  <a href="{{nextLink}}">Siguiente</a>
   {{/if}}
 </div>
 
@@ -38,6 +46,5 @@ ${{price}}
 
 </div>
 
-{{!-- Me traigo 2 scripts que hacen referenia al uso de los sockets --}}
 <script src="/socket.io/socket.io.js"></script>
 <script src="/js/indexProducts.js"></script>

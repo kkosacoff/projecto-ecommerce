@@ -1,0 +1,30 @@
+<!-- Header -->
+<div class="header">
+  <div class="container">
+    <div class="header-logo">
+      {{ siteName }}
+    </div>
+    <div class="header-nav">
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/products">Products</a></li>
+        <li><a href="/cart/{{session.cart._id}}">Cart</a></li>
+        <li><a href="/users/{{session.user.id}}/upload">My Profile</a></li>
+        <li><a href="/about">About</a></li>
+        <li><a id="logout-header">Logout</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+  const logout = document.getElementById('logout-header')
+  logout.addEventListener('click', (e) => {
+    e.preventDefault()
+    fetch('/api/sessions/logout', {
+      method: 'GET',
+    }).then((result) => {
+      if (result.status === 200) {
+        window.location.replace('/users/login')
+      }
+    })
+  })</script>

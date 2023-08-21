@@ -45,7 +45,7 @@ router.get('/failedRegister', async (req, res) => {
   console.log('Failed strategy')
   res.send({ status: 'error' }).status(302)
 })
-// ? ---
+// ? --- Login
 
 // ? Normal Login
 // router.post('/login', async (req, res) => {
@@ -88,9 +88,10 @@ router.post(
 
     const newUser = new UserDTO(req.user)
     const cart = await cm.createCart()
+
     req.session.cart = cart
     req.session.user = newUser
-
+    console.log(req.session.user.role)
     res
       .send({
         status: 'success',

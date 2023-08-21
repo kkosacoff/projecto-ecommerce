@@ -1,0 +1,55 @@
+<script>
+  window.onload = async function () {
+    const userId = '{{user.id}}' // Assuming you pass the userId to your view
+    const response = await fetch(`/api/users/${userId}/documents`);
+    const data = await response.json();
+
+    if (data.profileImagePath) {
+      document.getElementById('profileImage').src = data.profileImagePath;
+    }
+
+    const requiredDocuments = ['national_id', 'proof_of_address', 'bank_statement', 'profile_picture'];
+    const uploadedDocs = data.documents.map(doc => doc.documentType || doc.name);
+
+    requiredDocuments.forEach(doc => {
+      if (uploadedDocs.includes(doc)) {
+        console.log(doc)
+        const inputId = doc.replace(/\s/g, '');  // Create an input ID based on the document name/type by removing spaces
+        const inputElement = document.getElementById(inputId);
+        const parentDiv = document.getElementById(`${inputId}Div`);
+
+        if (inputElement) {
+          inputElement.disabled = true;
+          parentDiv.innerHTML += "<span>Already uploaded</span>"; 
+        }
+      }
+    });
+  }
+</script>
+
+
+<h1>Upload Your Files</h1>
+
+<img id="profileImage" alt="Profile Image" src="/files/profiles/default.jpeg" />
+
+<!-- Upload form for the documents -->
+<form action="/api/users/{{user.id}}/documents" method="post" enctype="multipart/form-data">
+  <div id="national_idDiv">
+    <label for="national_id">Identification:</label>
+    <input type="file" id="national_id" name="national_id">
+  </div>
+  <div id="proof_of_addressDiv">
+    <label for="proof_of_address">Proof of Address:</label>
+    <input type="file" id="proof_of_address" name="proof_of_address">
+  </div>
+  <div id="bank_statementDiv">
+    <label for="bank_statement">Proof of Account Statement:</label>
+    <input type="file" id="bank_statement" name="bank_statement">
+  </div>
+  <div id="profile_pictureDiv">
+    <label for="profile_picture">Profile Picture:</label>
+    <input type="file" id="profile_picture" name="profile">
+  </div>
+  <button type="submit">Upload</button>
+</form>
+

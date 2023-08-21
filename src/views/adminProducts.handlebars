@@ -9,6 +9,8 @@
   {{/each}}
 </ul>
 
+
+
 <div id="prod-form">
   <label for="title">Title:</label>
   <input placeholder="Tambor" type="text" id="title" name="title" required>
@@ -35,8 +37,9 @@
   <label for="category">Category:</label>
   <input placeholder="Percussion" type="text" id="category" name="category" required>
 
-  <label for="thumbnails">Thumbnails:</label>
-  <input placeholder="www.com" type="text" id="thumbnails" name="thumbnails[]" >
+
+  <label for="product">Product Image</label>
+  <input type="file" id="product" name="product">
 
   <button onclick="handleSubmitCreate()">Create Product</button>
 </div>

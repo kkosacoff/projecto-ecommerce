@@ -6,6 +6,7 @@ const getSession = async () => {
   })
 
   const jsonData = await resp.json()
+  console.log(jsonData)
   window.cart = jsonData.cart
 }
 

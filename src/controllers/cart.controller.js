@@ -1,8 +1,11 @@
 import CartManager from '../services/dao/db/services/cart.services.js'
 import TicketManager from '../services/dao/db/services/ticket.services.js'
+import ProductManager from '../services/dao/db/services/product.services.js'
+import transporter from './email.controller.js'
 
 const cm1 = new CartManager('')
 const tm1 = new TicketManager()
+const pm1 = new ProductManager()
 
 export default class CartController {
   createCartController = async (req, res) => {
@@ -81,14 +84,30 @@ export default class CartController {
   }
 
   userAddToCartController = async (req, res) => {
-    if (req.session.cart) {
-      const prodAdded = await cm1.addProductToCartById(
-        req.session.cart._id.toString(),
-        req.body.prodId,
-        req.body.quantity
-      )
-      if (prodAdded) {
-        res.status(200).send({ status: 'success', payload: prodAdded })
+    const prod = await pm1.getProductById(req.body.prodId)
+    const user = req.session.user
+
+    if (user.role == 'Premium' && user.id == prod.owner._id) {
+      res
+        .send({
+          status: 'error',
+          msg: 'Premium user cannot add their own products to cart',
+        })
+        .status(400)
+    } else {
+      if (req.session.cart) {
+        const prodAdded = await cm1.addProductToCartById(
+          req.session.cart._id.toString(),
+          req.body.prodId,
+          req.body.quantity
+        )
+        if (prodAdded) {
+          res.status(200).send({ status: 'success', payload: prodAdded })
+        }
+      } else {
+        res
+          .status(400)
+          .send({ status: 'error', msg: 'Error with adding to cart' })
       }
     }
   }
@@ -104,6 +123,15 @@ export default class CartController {
     const newTicket = await tm1.createTicket(total, req.session.user.email)
 
     if (newTicket) {
+      const mailOptions = {
+        to: req.session.user.email,
+        from: 'kikosacoff@gmail.com',
+        subject: `Thank you for your shopping with us! Order ${newTicket.code} created successfuly`,
+        text: `Your order ${newTicket.code} was created correctly. You will receive another email once the product is dispatched`,
+      }
+
+      // Send email
+      await transporter.sendMail(mailOptions)
       res
         .send({
           status: 'Success',

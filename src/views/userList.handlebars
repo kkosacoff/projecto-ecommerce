@@ -1,0 +1,43 @@
+<head>
+  <title>Admin - Users</title>
+</head>
+
+<body>
+
+  <h2>Users</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Email</th>
+        <th>Full Name</th>
+        <th>Role</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each users}}
+      <tr>
+        <td>{{this.email}}</td>
+        <td>{{this.fullName}}</td>
+        <td>
+          <select class="role-change" data-id="{{this._id}}">
+            <option value="User" {{#if (eq this.role "User" )}}selected{{/if}}>User</option>
+            <option value="Premium" {{#if (eq this.role "Premium" )}}selected{{/if}}>Premium</option>
+            <option value="Admin" {{#if (eq this.role "Admin" )}}selected{{/if}}>Admin</option>
+            <!-- Add more roles as necessary -->
+          </select>
+        </td>
+        <td>
+          <button class="delete-user" data-id="{{this._id}}">Delete</button>
+        </td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+
+</body>
+
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/userList.js"></script>

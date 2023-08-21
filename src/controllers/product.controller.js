@@ -1,8 +1,11 @@
 import { productService } from '../services/factory.js'
 import { generateProduct } from '../utils.js'
+import transporter from './email.controller.js'
+import { pathConverter } from '../services/middlewares/pathConverter.js'
 
 const persistenceFactory = productService
-const baseUrl = 'http://localhost:9090/api/products'
+
+// 'http://localhost:9090/api/products'
 
 export default class ProductController {
   getMockProducts = async (req, res) => {
@@ -19,7 +22,31 @@ export default class ProductController {
   }
 
   addProductController = async (req, res) => {
-    const newProd = await persistenceFactory.addProduct(req.body)
+    const jsonData = JSON.parse(req.body.formProduct)
+
+    const { title, description, code, price, status, stock, category } =
+      jsonData
+    const thumbnails = []
+
+    if (req.files.product) {
+      const productImage = req.files.product[0]
+      thumbnails.push({
+        name: productImage.originalName,
+        reference: pathConverter(productImage.path),
+      })
+    }
+
+    const newProd = await persistenceFactory.addProduct({
+      title,
+      description,
+      code,
+      price,
+      status,
+      stock,
+      category,
+      owner: req.session.user.id,
+      thumbnails,
+    })
 
     if (newProd) {
       res.status(201).send({
@@ -38,6 +65,7 @@ export default class ProductController {
   }
 
   getProductsController = async (req, res) => {
+    const baseUrl = ` http://${req.headers.host}/api/products`
     const newUrl = new URL(`${baseUrl}${req.url}`)
 
     const products = await persistenceFactory.getProductsNew(
@@ -77,6 +105,21 @@ export default class ProductController {
         .send({
           msg: 'success',
           ...respObj,
+        })
+        .status(200)
+    } else {
+      res.send({ msg: `Couldn't get products` }).status(400)
+    }
+  }
+
+  getProductsAdminController = async (req, res) => {
+    const products = await persistenceFactory.getProducts()
+
+    if (products) {
+      res
+        .send({
+          msg: 'success',
+          payload: products,
         })
         .status(200)
     } else {
@@ -127,7 +170,38 @@ export default class ProductController {
   }
 
   deleteProductByIdController = async (req, res) => {
-    persistenceFactory.deleteProductById(req.params.pid)
-    res.send('Ok')
+    try {
+      const product = await persistenceFactory.getProductById(req.params.pid)
+      const user = req.session.user
+
+      if (product.owner._id != user.id && user.role == 'Premium') {
+        res.status(400).send({
+          status: 'error',
+          msg: 'Premium User cannot delete other owned products',
+        })
+      } else {
+        const deleteProd = await persistenceFactory.deleteProductById(
+          req.params.pid
+        )
+        if (product.owner.role == 'Premium' && deleteProd) {
+          const mailOptions = {
+            to: product.owner.email,
+            from: 'kikosacoff@gmail.com',
+            subject: `Product ${req.params.pid} deleted`,
+            text: `Product ${req.params.pid} has been deleted. Contact the admin for more information`,
+          }
+
+          // Send email
+          await transporter.sendMail(mailOptions)
+        }
+        res.status(201).send({
+          status: 'success',
+          msg: `Product ${req.params.pid} deleted successfully`,
+        })
+      }
+    } catch {
+      res.status(400).send('Error')
+      throw new Error()
+    }
   }
 }
