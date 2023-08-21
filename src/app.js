@@ -9,6 +9,7 @@ import config from './config/config.js'
 import swaggerJSDoc from 'swagger-jsdoc'
 import swaggerUIExpress from 'swagger-ui-express'
 import exphbs from 'express-handlebars'
+import * as dotenv from 'dotenv'
 
 // Import routers
 import productsRouter from '../src/routes/products.router.js'
@@ -33,7 +34,6 @@ const pm = new ProductManager()
 
 // Configure server
 const app = express()
-const PORT = 9090
 
 /*=============================================
 =                   Middlewares               =
@@ -151,6 +151,8 @@ app.get('/', (req, res) => {
 })
 
 // Activate server
+const PORT = process.env.PORT || 8080
+
 const httpServer = app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`)
 })
