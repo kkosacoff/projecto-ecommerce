@@ -7,7 +7,7 @@ const um = new UserManager()
 
 export default class ViewController {
   getProductsControllerView = async (req, res) => {
-    const baseUrl = ` http://${req.headers.host}/api/products`
+    const baseUrl = `http://${req.headers.host}/api/products`
     const newUrl = new URL(`${baseUrl}${req.url}`)
 
     const products = await persistenceFactory.getProductsNew(

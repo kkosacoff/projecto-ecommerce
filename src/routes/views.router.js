@@ -5,6 +5,7 @@ import checkPermission from '../services/middlewares/check-permission.js'
 import UserController from '../controllers/user.controller.js'
 import ProductController from '../controllers/product.controller.js'
 import ViewController from '../controllers/view.controller.js'
+import fetch from 'node-fetch'
 
 const uc = new UserController()
 const pc = new ProductController()
@@ -55,7 +56,6 @@ router.get('/products', checkPermission('view_product'), async (req, res) => {
 // Cart
 router.get('/cart/:cid', async (req, res) => {
   const baseUrl = `http://${req.headers.host}`
-  console.log(`${baseUrl}/api/carts/${req.params.cid}`)
   const resp = await fetch(`${baseUrl}/api/carts/${req.params.cid}`)
   const jsonData = await resp.json()
   console.log(jsonData)
